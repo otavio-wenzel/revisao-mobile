@@ -2,12 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Pixel Onça</title>
+  <title>Pixel Jaguar Viewer</title>
   <style>
     * {
       box-sizing: border-box;
     }
-
     body {
       margin: 0;
       min-height: 100vh;
@@ -15,20 +14,17 @@
       align-items: center;
       justify-content: center;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #1e293b, #020617);
+      background: radial-gradient(circle at top, #0f172a, #020617);
       color: #e5e7eb;
     }
-
     .card {
-      background: rgba(15, 23, 42, 0.95);
+      background: rgba(15, 23, 42, 0.96);
       border-radius: 1.5rem;
-      padding: 1.75rem 2rem 1.5rem;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+      padding: 1.75rem 2rem 1.25rem;
       border: 1px solid rgba(148, 163, 184, 0.35);
-      max-width: 520px;
-      width: 100%;
+      box-shadow: 0 26px 60px rgba(0,0,0,0.75);
+      width: min(700px, 100%);
     }
-
     .card-header {
       display: flex;
       justify-content: space-between;
@@ -36,13 +32,11 @@
       margin-bottom: 1rem;
       gap: 1rem;
     }
-
-    .card-title {
+    .title {
       font-size: 1.25rem;
       font-weight: 600;
       letter-spacing: 0.03em;
     }
-
     .badge {
       padding: 0.25rem 0.7rem;
       border-radius: 999px;
@@ -50,65 +44,60 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
       border: 1px solid rgba(148, 163, 184, 0.8);
-      color: #e5e7eb;
-      background: linear-gradient(to right, rgba(15,118,110,0.15), rgba(59,130,246,0.12));
+      background: linear-gradient(to right, rgba(34,197,94,0.15), rgba(59,130,246,0.18));
     }
-
     .canvas-wrapper {
-      padding: 1rem;
       border-radius: 1.25rem;
-      background: radial-gradient(circle at top left, #0f172a, #020617);
-      border: 1px solid rgba(30, 64, 175, 0.7);
+      border: 1px solid rgba(30, 64, 175, 0.9);
+      background: radial-gradient(circle at top left, #020617, #020617);
+      padding: 1rem;
       display: flex;
       justify-content: center;
       align-items: center;
       margin-bottom: 1rem;
+      overflow: hidden;
     }
-
     canvas {
       image-rendering: pixelated;
-      border-radius: 0.75rem;
+      image-rendering: crisp-edges;
       background: #020617;
+      border-radius: 0.75rem;
+      max-width: 100%;
+      max-height: 500px;
     }
-
     .controls {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
       gap: 1rem;
       font-size: 0.85rem;
       justify-content: space-between;
+      align-items: flex-start;
     }
-
     .control-group {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
-      min-width: 160px;
+      min-width: 180px;
     }
-
     .range-row {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-
     input[type="range"] {
       width: 100%;
       accent-color: #f59e0b;
     }
-
     .value-pill {
-      min-width: 2.2rem;
-      text-align: center;
-      padding: 0.15rem 0.4rem;
+      padding: 0.15rem 0.5rem;
       border-radius: 999px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,184,0.7);
+      border: 1px solid rgba(148, 163, 184, 0.8);
       font-variant-numeric: tabular-nums;
       font-size: 0.8rem;
+      min-width: 2.5rem;
+      text-align: center;
+      background: rgba(15,23,42,0.9);
     }
-
     .checkbox-row {
       display: flex;
       align-items: center;
@@ -116,26 +105,33 @@
       cursor: pointer;
       user-select: none;
     }
-
+    select {
+      padding: 0.25rem 0.4rem;
+      border-radius: 0.4rem;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.96);
+      color: #e5e7eb;
+      font-size: 0.8rem;
+    }
     .hint {
-      margin-top: 0.5rem;
+      margin-top: 0.6rem;
       font-size: 0.75rem;
       color: #9ca3af;
     }
-
     .hint code {
-      background: rgba(15,23,42,0.9);
+      background: rgba(15,23,42,0.95);
       padding: 0.1rem 0.4rem;
-      border-radius: 0.4rem;
-      font-size: 0.7rem;
+      border-radius: 0.35rem;
       border: 1px solid rgba(55,65,81,0.9);
+      font-size: 0.7rem;
     }
-
-    @media (max-width: 540px) {
+    @media (max-width: 560px) {
       .card {
         border-radius: 0;
         height: 100vh;
-        max-width: none;
+      }
+      .canvas-wrapper {
+        max-height: 55vh;
       }
     }
   </style>
@@ -143,219 +139,180 @@
 <body>
   <div class="card">
     <div class="card-header">
-      <div class="card-title">Pixel Onça (Jaguar)</div>
-      <div class="badge">Canvas · JS</div>
+      <div class="title">Onça Pixel Perfeita</div>
+      <div class="badge">Sprite · Canvas</div>
     </div>
 
+    <!-- IMPORTANTE: coloque um arquivo jaguar.png na mesma pasta -->
+    <img id="jaguarSprite" src="jaguar.png" alt="jaguar pixel sprite" style="display:none" />
+
     <div class="canvas-wrapper">
-      <canvas id="jaguarCanvas"></canvas>
+      <canvas id="canvas"></canvas>
     </div>
 
     <div class="controls">
       <div class="control-group">
-        <label for="pixelSize">Pixel size</label>
+        <label for="scaleRange">Zoom (escala do pixel)</label>
         <div class="range-row">
-          <input type="range" id="pixelSize" min="10" max="34" value="22" />
-          <div class="value-pill" id="pixelSizeValue">22</div>
+          <input type="range" id="scaleRange" min="1" max="12" value="4">
+          <div class="value-pill" id="scaleValue">4x</div>
         </div>
       </div>
 
       <div class="control-group">
-        <span>Opções</span>
+        <label for="bgSelect">Fundo</label>
+        <select id="bgSelect">
+          <option value="solid-dark">Sólido escuro</option>
+          <option value="solid-light">Sólido claro</option>
+          <option value="checker">Quadriculado</option>
+          <option value="jungle">Degradê selva</option>
+        </select>
+
         <label class="checkbox-row">
-          <input type="checkbox" id="showGrid" checked />
-          <span>Mostrar grade</span>
+          <input type="checkbox" id="showGrid" />
+          <span>Mostrar grade de pixels</span>
         </label>
       </div>
     </div>
 
     <div class="hint">
-      Dica: você pode editar a matriz de pixels em <code>PIXEL_MAP</code> e a paleta em <code>PALETTE</code> dentro do script para mudar o desenho da onça.
+      Salve a imagem da onça como <code>jaguar.png</code> na mesma pasta que este HTML,
+      depois abra o arquivo no navegador. O canvas vai redesenhar o sprite com
+      <strong>pixel art real</strong> (sem blur). Você pode trocar o arquivo para qualquer outra onça.
     </div>
   </div>
 
   <script>
-    // ============================
-    //  CONFIGURAÇÃO DA PIXEL-ART
-    // ============================
-    // 0 = vazio / fundo
-    // 1 = contorno
-    // 2 = pelagem principal
-    // 5 = manchas
-    // 6 = branco dos olhos
-    // 7 = pupila
-    // 8 = focinho / boca
-    // 9 = interior da orelha
-
-    const PIXEL_MAP = [
-      [0,0,0,0,1,2,2,1,1,2,2,1,0,0,0,0],
-      [0,0,0,1,2,2,2,2,2,2,2,2,1,0,0,0],
-      [0,0,1,2,2,2,2,2,2,2,2,2,2,1,0,0],
-      [0,1,2,9,2,2,2,2,2,2,2,2,9,2,1,0],
-      [0,1,2,2,2,5,2,2,2,2,5,2,2,2,1,0],
-      [1,2,2,5,2,2,2,2,2,2,2,5,2,2,2,1],
-      [1,2,2,2,2,6,7,2,2,7,6,2,2,2,2,1],
-      [1,2,2,2,2,2,6,2,2,6,2,2,2,2,2,1],
-      [1,2,2,2,8,8,8,2,2,8,8,8,2,2,2,1],
-      [1,2,2,2,8,8,8,8,8,8,8,8,2,2,2,1],
-      [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
-      [0,1,2,2,2,2,5,2,2,5,2,2,2,2,1,0],
-      [0,0,1,2,2,2,2,2,2,2,2,2,2,1,0,0],
-      [0,0,0,1,2,2,2,2,2,2,2,2,1,0,0,0],
-      [0,0,0,0,1,2,2,2,2,2,2,1,0,0,0,0],
-      [0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0]
-    ];
-
-    const PALETTE = {
-      0: null,           // transparente
-      1: "#1f2933",      // contorno escuro
-      2: "#f4b23a",      // pelagem (dourado)
-      5: "#2b1b12",      // manchas
-      6: "#fefefc",      // branco dos olhos
-      7: "#111827",      // pupila
-      8: "#f7cea1",      // focinho/queixo
-      9: "#f9a8d4"       // dentro da orelha
-    };
-
-    const artHeight = PIXEL_MAP.length;
-    const artWidth = PIXEL_MAP[0].length;
-
-    // Coordenadas dos pixels de olho (para piscar)
-    const eyeCoords = [
-      { y: 6, x: 5 }, // branco olho esquerdo
-      { y: 6, x: 6 }, // pupila esquerda
-      { y: 6, x: 9 }, // pupila direita
-      { y: 6, x: 10 },// branco olho direito
-      { y: 7, x: 6 }, // sombra olho esquerdo
-      { y: 7, x: 9 }  // sombra olho direito
-    ];
-    const eyeKeySet = new Set(eyeCoords.map(c => `${c.y},${c.x}`));
-
-    // ==========
-    //  CANVAS
-    // ==========
-    const canvas = document.getElementById("jaguarCanvas");
+    const img = document.getElementById("jaguarSprite");
+    const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
 
-    const pixelSizeInput = document.getElementById("pixelSize");
-    const pixelSizeValue = document.getElementById("pixelSizeValue");
+    const scaleRange = document.getElementById("scaleRange");
+    const scaleValue = document.getElementById("scaleValue");
+    const bgSelect = document.getElementById("bgSelect");
     const showGridInput = document.getElementById("showGrid");
 
-    let pixelSize = parseInt(pixelSizeInput.value, 10);
+    let scale = parseInt(scaleRange.value, 10);
     let showGrid = showGridInput.checked;
-    let lastTimestamp = 0;
+    let bgMode = bgSelect.value;
+    let spriteLoaded = false;
 
-    function resizeCanvas() {
+    function resizeCanvasToSprite() {
+      if (!spriteLoaded) return;
       const dpr = window.devicePixelRatio || 1;
-      const displayWidth = artWidth * pixelSize;
-      const displayHeight = artHeight * pixelSize;
+
+      const displayWidth = img.width * scale;
+      const displayHeight = img.height * scale;
 
       canvas.width = displayWidth * dpr;
       canvas.height = displayHeight * dpr;
       canvas.style.width = displayWidth + "px";
       canvas.style.height = displayHeight + "px";
 
-      // Reset transform antes de aplicar nova escala
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
     }
 
-    function isBlinking(timeMs) {
-      // Pisca rápido a cada ~3.2 segundos
-      const blinkInterval = 3200;    // tempo entre piscadas
-      const blinkDuration = 160;     // duração da piscada
+    function drawBackground() {
+      const w = canvas.width / (window.devicePixelRatio || 1);
+      const h = canvas.height / (window.devicePixelRatio || 1);
 
-      const t = timeMs % (blinkInterval + blinkDuration);
-      return t > blinkInterval;
+      if (bgMode === "solid-dark") {
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(0, 0, w, h);
+      } else if (bgMode === "solid-light") {
+        ctx.fillStyle = "#f9fafb";
+        ctx.fillRect(0, 0, w, h);
+      } else if (bgMode === "checker") {
+        const cell = 8;
+        for (let y = 0; y < h; y += cell) {
+          for (let x = 0; x < w; x += cell) {
+            const even = ((x / cell) + (y / cell)) % 2 === 0;
+            ctx.fillStyle = even ? "#0f172a" : "#111827";
+            ctx.fillRect(x, y, cell, cell);
+          }
+        }
+      } else if (bgMode === "jungle") {
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, "#064e3b");
+        grad.addColorStop(0.5, "#022c22");
+        grad.addColorStop(1, "#020617");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      }
     }
 
-    function drawFrame(timestamp) {
-      const dt = timestamp - lastTimestamp;
-      lastTimestamp = timestamp;
+    function drawSprite() {
+      if (!spriteLoaded) return;
 
-      const displayWidth = artWidth * pixelSize;
-      const displayHeight = artHeight * pixelSize;
+      const w = img.width * scale;
+      const h = img.height * scale;
 
-      // Ligeiro "respirar" vertical
-      const bobOffset = Math.sin(timestamp / 900) * (pixelSize * 0.15);
-      const blinking = isBlinking(timestamp);
+      drawBackground();
 
-      ctx.clearRect(0, 0, displayWidth, displayHeight);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(
+        img,
+        0, 0, img.width, img.height,
+        0, 0, w, h
+      );
 
-      // Fundo
-      ctx.fillStyle = "#020617";
-      ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-      // Desenhar pixels
-      for (let y = 0; y < artHeight; y++) {
-        for (let x = 0; x < artWidth; x++) {
-          let colorIndex = PIXEL_MAP[y][x];
-          const key = `${y},${x}`;
-
-          // Durante o piscar, substituímos os olhos pela pelagem
-          if (blinking && eyeKeySet.has(key)) {
-            colorIndex = 2; // pelagem
-          }
-
-          const color = PALETTE[colorIndex];
-          if (!color) continue;
-
-          ctx.fillStyle = color;
-          ctx.fillRect(
-            x * pixelSize,
-            y * pixelSize + bobOffset,
-            pixelSize,
-            pixelSize
-          );
-        }
-      }
-
-      // Grade opcional
       if (showGrid) {
         ctx.save();
-        ctx.globalAlpha = 0.25;
-        ctx.strokeStyle = "#4b5563";
+        ctx.imageSmoothingEnabled = false;
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.35)";
         ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.7;
 
-        for (let x = 0; x <= artWidth; x++) {
+        for (let x = 0; x <= img.width; x++) {
           ctx.beginPath();
-          ctx.moveTo(x * pixelSize + 0.5, bobOffset);
-          ctx.lineTo(x * pixelSize + 0.5, artHeight * pixelSize + bobOffset);
+          ctx.moveTo(x * scale + 0.5, 0);
+          ctx.lineTo(x * scale + 0.5, h);
           ctx.stroke();
         }
-
-        for (let y = 0; y <= artHeight; y++) {
+        for (let y = 0; y <= img.height; y++) {
           ctx.beginPath();
-          ctx.moveTo(0, y * pixelSize + 0.5 + bobOffset);
-          ctx.lineTo(artWidth * pixelSize, y * pixelSize + 0.5 + bobOffset);
+          ctx.moveTo(0, y * scale + 0.5);
+          ctx.lineTo(w, y * scale + 0.5);
           ctx.stroke();
         }
 
         ctx.restore();
       }
-
-      requestAnimationFrame(drawFrame);
     }
 
-    // ============
-    //  EVENTOS UI
-    // ============
-    pixelSizeInput.addEventListener("input", () => {
-      pixelSize = parseInt(pixelSizeInput.value, 10);
-      pixelSizeValue.textContent = pixelSize;
-      resizeCanvas();
+    // Eventos de UI
+    scaleRange.addEventListener("input", () => {
+      scale = parseInt(scaleRange.value, 10);
+      scaleValue.textContent = scale + "x";
+      resizeCanvasToSprite();
+      drawSprite();
+    });
+
+    bgSelect.addEventListener("change", () => {
+      bgMode = bgSelect.value;
+      drawSprite();
     });
 
     showGridInput.addEventListener("change", () => {
       showGrid = showGridInput.checked;
+      drawSprite();
     });
 
-    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("resize", () => {
+      resizeCanvasToSprite();
+      drawSprite();
+    });
 
-    // Inicialização
-    pixelSizeValue.textContent = pixelSize;
-    resizeCanvas();
-    requestAnimationFrame(drawFrame);
+    img.addEventListener("load", () => {
+      spriteLoaded = true;
+      resizeCanvasToSprite();
+      drawSprite();
+    });
+
+    img.addEventListener("error", () => {
+      console.error("Não foi possível carregar jaguar.png. Verifique se o arquivo está na mesma pasta.");
+    });
   </script>
 </body>
 </html>
